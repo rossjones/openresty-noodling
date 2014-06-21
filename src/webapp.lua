@@ -6,7 +6,7 @@ local inspect = require('inspect')
 local before_fn = nil;
 local after_fn = nil;
 
-request = {};
+__request = {};
 local before_fns = {};
 local after_fns = {};
 
@@ -41,7 +41,7 @@ function render(template_name, context)
     --ngx.header.content_type = 'text/html';
     local page = tirtemplate.tload(template_name)
     local ctx = context
-    ctx['request'] = request
+    ctx['request'] = __request
     ngx.print( page(ctx) )
 end
 
@@ -66,19 +66,30 @@ function routes(user_routes)
         local uri = '^/'.. pattern
         local match = ngx.re.match(ngx.var.uri, uri, "")
         if match then
-            for i, fn in ipairs(before_fns) do
-                fn()
-            end
 
-            -- We should unpack match so that we can pass the arguments that match in order
+            table.foreach(before_fns, function(k,v) v() end)
+
+            -- We should unpack the match so that we can pass the arguments
+            -- in order. Hopefully I can work out how to unpack them in a way
+            -- that'll allow named params ...
             exit = view(unpack(match)) or ngx.HTTP_OK
 
-            for i, fn in ipairs(after_fns) do
-                fn()
-            end
+            table.foreach(after_fns, function(k,v) v() end)
 
             ngx.exit( exit )
         end
     end
 end
+
+
+---------------------------------------------------- ---------------------- Helpers
+
+function map(tbl, f)
+    local t = {}
+    for k,v in pairs(tbl) do
+        t[k] = f(v)
+    end
+    return t
+end
+
 

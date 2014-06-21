@@ -49,7 +49,7 @@ local function init_db()
 end
 
 local function add_user()
-    webapp.request['user'] = 1
+    webapp.__request['user'] = 1
 end
 
 --
