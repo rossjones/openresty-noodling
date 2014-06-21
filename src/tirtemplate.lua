@@ -1,3 +1,6 @@
+--- tirtemplate.lua is part of tir (http://tir.mongrel2.org/) and available under the
+--- BSD-3 license - http://tir.mongrel2.org/wiki/license.html
+
 module('tirtemplate', package.seeall)
 
 -- Simplistic HTML escaping.
